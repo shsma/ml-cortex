@@ -14,12 +14,16 @@ class PythonPredictor:
     def __init__(self, config):
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, 'ml-gc.pkl')
-        self.model = pickle.load(open(filename, "rb"))
+        self.model = pickle.load(open('ml-gc.pkl', "rb"))
         
     
     def predict(self, payload):
         user_data = pd.read_json([{"g_c": "0 101", "total_hits": 2.5297468314589597},{"g_c": "1 206","total_hits": 7.479255880735178}])
         raw_predictions = self.model.predict([user_data])
+                
+        if raw_predictions is None:
+            return 'No prediction for the moment'
+            
         predictions = list(
             map(
                 lambda k: Prediction(
