@@ -2,9 +2,21 @@
   kind: RealtimeAPI
   predictor:
     type: python
-    path: predictor.py
+    path: ml-bg/predictor.py
   monitoring:
     model_type: classification
   compute:
     cpu: 1
     mem: 200M
+
+- name: ml-gc
+  kind: RealtimeAPI
+  predictor:
+    type: python
+    path: ml-gc/predictor.py
+  monitoring:
+    model_type: classification
+  compute:
+    cpu: 1
+    mem: 200M
+
