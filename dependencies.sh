@@ -1,0 +1,1 @@
+cp pip.conf /etc/pip.conf
