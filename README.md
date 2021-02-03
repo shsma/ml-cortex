@@ -1,2 +1,2 @@
-# cortex-example
+# Cortex-example
 # ml-cortex
