@@ -4,8 +4,13 @@ import sys
 import pandas as pd 
 
 class Prediction:
-    def __init__(self, category_ids: [int], score: float, liked: bool, gender: int):
-        self.category_ids = category_ids
+    brand_id: int
+    score: float
+    liked: bool
+    gender: int
+
+    def __init__(self, brand_id: int, score: float, liked: bool, gender: int):
+        self.brand_id = brand_id
         self.score = score
         self.liked = liked
         self.gender = gender
@@ -18,26 +23,21 @@ class PythonPredictor:
         
     
     def predict(self, payload):
-        user_data = pd.read_json('[{"b_g": "0 101", "total_hits": 2.5297468314589597},{"b_g": "1 206","total_hits": 7.479255880735178}]')
-        raw_predictions = self.model.predict([user_data])
+        user_data = pd.read_json("[{\"b_g\": \"425 0\", \"total_hits\": 0.10170139230422684}]")
+        raw_predictions = self.model.predict(user_data)
         
         if raw_predictions is None:
-            return 'No prediction for the moment'
+            return []
             
-        predictions = list(
-            map(
-                lambda k: Prediction(
-                    # Note that the type of category ids output of the model is a string
-                    # but the server prediction entity requires a list of integer
-                    category_ids=list(
-                        map(int, raw_predictions.category_ids[k].split(","))
-                    ),
-                    gender=int(raw_predictions.gender[k]),
-                    score=raw_predictions.score[k],
-                    liked=bool(raw_predictions.liked[k]),
-                ),
-                raw_predictions.category_ids.keys(),
-            )
-        )
+        
+        predictions = list(map(
+            lambda k: {
+                'brand_id': raw_predictions.brand[k],
+                'gender': raw_predictions.gender[k],
+                'score': raw_predictions.score[k],
+                'liked': raw_predictions.liked[k]
+            },
+            raw_predictions.brand.keys()))
+            
 
         return predictions
