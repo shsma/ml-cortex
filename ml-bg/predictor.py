@@ -1,4 +1,3 @@
-import os
 import pickle
 import sys
 import pandas as pd 
@@ -17,8 +16,6 @@ class Prediction:
 
 class PythonPredictor:
     def __init__(self, config):
-        dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, 'ml-bg.pkl')
         self.model = pickle.load(open('ml-bg.pkl', "rb"))
         
     
