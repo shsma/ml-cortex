@@ -2,9 +2,10 @@ import os
 import pickle
 import sys
 import pandas as pd 
+from typing import List
 
 class Prediction:
-    def __init__(self, category_ids: [int], score: float, liked: bool, gender: int):
+    def __init__(self, category_ids: List[int], score: float, liked: bool, gender: int):
         self.category_ids = category_ids
         self.score = score
         self.liked = liked
@@ -12,30 +13,27 @@ class Prediction:
 
 class PythonPredictor:
     def __init__(self, config):
-        dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, 'ml-gc.pkl')
         self.model = pickle.load(open('ml-gc.pkl', "rb"))
         
     
     def predict(self, payload):
-        user_data = pd.read_json('[{"g_c": "0 101", "total_hits": 2.5297468314589597},{"g_c": "1 206","total_hits": 7.479255880735178}]')
-        raw_predictions = self.model.predict([user_data])
+        data = "[{\"g_c\": \"1 142\", \"total_hits\": 5.171922279614769}, {\"g_c\": \"1 182\", \"total_hits\": 15.635223450087942}, {\"g_c\": \"1 241\", \"total_hits\": 9.76814975539347}]"
+        user_data = pd.read_json(data)
+        raw_predictions = self.model.predict(user_data)
                 
         if raw_predictions is None:
-            return 'No prediction for the moment'
+            return []
             
         predictions = list(
             map(
-                lambda k: Prediction(
-                    # Note that the type of category ids output of the model is a string
-                    # but the server prediction entity requires a list of integer
-                    category_ids=list(
+                lambda k: {
+                    'category_ids': list(
                         map(int, raw_predictions.category_ids[k].split(","))
                     ),
-                    gender=int(raw_predictions.gender[k]),
-                    score=raw_predictions.score[k],
-                    liked=bool(raw_predictions.liked[k]),
-                ),
+                    'gender': int(raw_predictions.gender[k]),
+                    'score': raw_predictions.score[k],
+                    'liked': bool(raw_predictions.liked[k]),
+                },
                 raw_predictions.category_ids.keys(),
             )
         )
